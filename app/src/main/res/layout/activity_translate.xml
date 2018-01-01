@@ -61,8 +61,7 @@
             android:inputType="textMultiLine"
             android:paddingEnd="15dp"
             android:paddingStart="15dp"
-            android:paddingTop="10dp"
-            android:text="你好吗？" />
+            android:paddingTop="10dp" />
         <View
             android:layout_height="2dp"
             android:layout_width="match_parent"

@@ -1,6 +1,5 @@
 package com.example.windkts.final_project;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -44,11 +43,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        initView();
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+
+    }
+    private void initView(){
+        //viewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         Adapter adapter = new Adapter(getSupportFragmentManager());
         adapter.addFragment(new HomeFragment());
@@ -72,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        Intent j = new Intent(MainActivity.this,TranslateActivity.class);
-        startActivity(j);
+
+
     }
 
     static class Adapter extends FragmentPagerAdapter {

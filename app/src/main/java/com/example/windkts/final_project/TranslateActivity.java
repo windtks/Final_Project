@@ -1,5 +1,6 @@
 package com.example.windkts.final_project;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,19 +27,23 @@ public class TranslateActivity extends AppCompatActivity {
     private TextView web_result;
     private TextView basic_result;
     private ImageButton star;
+
+    private String appKey ="7e69071cb0e80746";
+    private String query = "";
+    private String salt = String.valueOf(System.currentTimeMillis());
+    private String from = "zh-CHS";
+    private String to = "EN";
+    private String sign = md5(appKey + query + salt+ "j8saelWS6ebet7gzHGI9z17my2vQ38Wk");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_translate);
         final Handler updatehandler = new Handler();
+        getInfo();
         initView();
         //Query Starts
-        String appKey ="7e69071cb0e80746";
-        String query = input.getText().toString();
-        String salt = String.valueOf(System.currentTimeMillis());
-        String from = "zh-CHS";
-        String to = "EN";
-        String sign = md5(appKey + query + salt+ "j8saelWS6ebet7gzHGI9z17my2vQ38Wk");
+
         final Map params = new HashMap();
         params.put("q", query);
         params.put("from", from);
@@ -63,10 +68,17 @@ public class TranslateActivity extends AppCompatActivity {
 
     private void initView() {
         input = findViewById(R.id.editText);
+        input.setText(query);
         translate_result = findViewById(R.id.translate);
         basic_result = findViewById(R.id.basic);
         web_result = findViewById(R.id.web);
         star = findViewById(R.id.imageButton2);
+    }
+    private void getInfo(){
+        Intent intent = getIntent();
+        query = intent.getStringExtra("query");
+        from = intent.getStringExtra("source");
+        to = intent.getStringExtra("target");
     }
 
     private class UpdateUi implements Runnable{
