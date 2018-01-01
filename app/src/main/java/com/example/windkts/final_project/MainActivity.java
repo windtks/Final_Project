@@ -1,5 +1,6 @@
 package com.example.windkts.final_project;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        Intent j = new Intent(MainActivity.this,TranslateActivity.class);
+        startActivity(j);
     }
 
     static class Adapter extends FragmentPagerAdapter {
