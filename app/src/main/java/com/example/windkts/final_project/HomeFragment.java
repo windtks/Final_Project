@@ -25,8 +25,8 @@ public class HomeFragment extends Fragment {
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(event!=null && event.getKeyCode()==KeyEvent.KEYCODE_ENTER){
-                    if(event.getAction()== KeyEvent.ACTION_UP){
+                if(event != null && event.getKeyCode()== KeyEvent.KEYCODE_ENTER){
+                    if(event.getAction() == KeyEvent.ACTION_DOWN){
                         Intent intent = new Intent(getContext(),TranslateActivity.class);
                         intent.putExtra("query",input.getText().toString());
                         //测试用
@@ -35,11 +35,11 @@ public class HomeFragment extends Fragment {
                         getContext().startActivity(intent);
                         return true;
                     }
-                    return true;
                 }
                 return false;
             }
         });
+
         return view;
     }
 
