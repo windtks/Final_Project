@@ -2,9 +2,11 @@ package com.example.windkts.final_project;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,11 +35,14 @@ public class TranslateActivity extends AppCompatActivity {
     private TextView translate_result;
     private TextView web_result;
     private TextView basic_result;
+    private TextView basic_tag;
+    private TextView web_tag;
+    private TextView warn;
     private ImageButton star;
     private ProgressBar pb;
     private Button s_l;
-    private boolean is_basic = true;
-    private boolean is_web = true;
+    private boolean is_basic = false;
+    private boolean is_web = false;
     private String translation ="";
     private String web_trans = "";
     private String basic_trans ="";
@@ -48,13 +53,55 @@ public class TranslateActivity extends AppCompatActivity {
     String from = "";
     String to = "";
     String sign = "";
+    private Handler updatehandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                //Start
+                case 0:
+                    translate_result.setVisibility(View.GONE);
+                    basic_result.setVisibility(View.GONE);
+                    basic_tag.setVisibility(View.GONE);
+                    web_result.setVisibility(View.GONE);
+                    web_tag.setVisibility(View.GONE);
+                    pb.setVisibility(View.GONE);
+                    warn.setVisibility(View.GONE);
+                    star.setVisibility(View.GONE);
+                    break;
+                //Timeout
+                case 999:
+                    pb.setVisibility(View.GONE);
+                    warn.setVisibility(View.VISIBLE);
+                    break;
+                //RETURN
+                case 1:
+                    pb.setVisibility(View.GONE);
+                    warn.setVisibility(View.GONE);
+                    translate_result.setVisibility(View.VISIBLE);
+                    translate_result.setText(translation);
+                    star.setVisibility(View.VISIBLE);
+                    if(is_basic){
+                        basic_result.setVisibility(View.VISIBLE);
+                        basic_tag.setVisibility(View.VISIBLE);
+                        basic_result.setText(basic_trans);
+                    }
+                    if(is_web){
+                        web_result.setVisibility(View.VISIBLE);
+                        web_tag.setVisibility(View.VISIBLE);
+                        web_result.setText(web_trans);
+                    }
+                    break;
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_translate);
 
 
-        getInfo();
+
 
         //Init View START
         input = findViewById(R.id.editText);
@@ -64,14 +111,42 @@ public class TranslateActivity extends AppCompatActivity {
         star = findViewById(R.id.imageButton2);
         s_l = findViewById(R.id.source_lan);
         pb = findViewById(R.id.progressBar);
+        basic_tag = findViewById(R.id.basic_tag);
+        web_tag = findViewById(R.id.web_tag);
+        warn = findViewById(R.id.warn);
         //Init View END
-        final Handler updatehandler = new Handler();
+
         input.setText(query);
         pb.setVisibility(View.GONE);
         translation ="";
         web_trans = "";
         basic_trans ="";
 
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(event != null && event.getKeyCode()== KeyEvent.KEYCODE_ENTER){
+                    if(event.getAction() == KeyEvent.ACTION_DOWN){
+                        Query();
+                    }
+                }
+                return false;
+            }
+        });
+        getInfo();
+        Query();
+
+    }
+    public void Query(){
+        query = input.getText().toString();
+        salt = String.valueOf(System.currentTimeMillis());
+        sign = md5(appKey + query + salt+ "j8saelWS6ebet7gzHGI9z17my2vQ38Wk");
+        //from = , to =
+        translation ="";
+        web_trans = "";
+        basic_trans ="";
+        is_basic = false;
+        is_web = false;
         //Query Starts
         final Map params = new HashMap();
         params.put("q", query);
@@ -84,11 +159,15 @@ public class TranslateActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try{
+                    Message p_msg = new Message();
+                    p_msg.what = 0;
+                    updatehandler.sendMessage(p_msg);
                     //warning: changing UI should only be done in Main Thread!
                     JSONArray JSONtranslation = null;
                     JSONArray JSONexp = null;
                     Log.d("lhl","new thread!");
                     JSONObject result = new JSONObject(readParse(getUrlWithQueryString("http://openapi.youdao.com/api",params)));
+
                     Log.d("lhl",result.toString());
                     //To do: JSON to String!
 
@@ -113,12 +192,13 @@ public class TranslateActivity extends AppCompatActivity {
                         JSONObject jsonBasic = (JSONObject) result.get("basic");
                         is_basic = true;
                         JSONexp = new JSONArray(jsonBasic.getString("explains"));
+
                     }catch (Exception e){
                         is_basic = false;
                     }
                     try{
-                        for(int i = 1; i <= JSONexp.length(); i++){
-                            basic_trans += "("+i+")"+" "+JSONexp.getString(i)+"\n";
+                        for(int i = 0; i < JSONexp.length(); i++){
+                            basic_trans += "("+ (i+1) +")"+" "+JSONexp.getString(i)+"\n";
                         }
                     }catch (Exception e){
                         e.printStackTrace();
@@ -134,9 +214,9 @@ public class TranslateActivity extends AppCompatActivity {
                                     JSONwebson.getString("value"));
                             for(int j = 0; j < JSONwebsonson.length(); j++){
                                 web_trans += JSONwebsonson.get(j);
-                                if(j != JSONwebsonson.length() - 1) web_trans += ", ";
+                                if(j != JSONwebsonson.length() - 1) web_trans += "; ";
                             }
-                            web_trans += ";\n";
+                            web_trans += ";\n\n";
                         }
                         is_web = true;
                     }catch (Exception e){
@@ -144,47 +224,31 @@ public class TranslateActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     //GET WEB END
-                    Log.d("lhl","prepost");
-                    TUpdateUi updateUi = new TUpdateUi(translation,web_trans,basic_trans);
-                    Log.d("lhl","post");
-                    updatehandler.post(updateUi);
+                    Message s_msg = new Message();
+                    s_msg.what = 1;
+
+                    updatehandler.sendMessage(s_msg);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
             }
         }).start();
         //Query ends
-
-
     }
-
     private void getInfo(){
         Intent intent = getIntent();
         query = intent.getStringExtra("query");
+        input.setText(query);
         from = intent.getStringExtra("source");
         to = intent.getStringExtra("target");
         sign = md5(appKey + query + salt+ "j8saelWS6ebet7gzHGI9z17my2vQ38Wk");
+        translation ="";
+        web_trans = "";
+        basic_trans ="";
+        is_basic = false;
+        is_web = false;
     }
 
-    private class TUpdateUi implements Runnable{
-        private String tran;
-        private String web;
-        private String basic;
-
-        TUpdateUi(String tran,String web,String basic){
-            this.tran = tran;
-            this.web = web;
-            this.basic = basic;
-        }
-
-        @Override
-        public void run() {
-            //更新UI
-            translate_result.setText(tran);
-            basic_result.setText(basic);
-            web_result.setText(web);
-        }
-    }
     /**
      * 从指定的URL中获取文本
      * @param urlPath
@@ -199,10 +263,15 @@ public class TranslateActivity extends AppCompatActivity {
         InputStream inStream = null;
         try{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5000);
+            conn.setConnectTimeout(3000);
+            conn.setReadTimeout(3000);
             inStream = conn.getInputStream();
         }catch (Exception e){
-            Toast.makeText(this,"Timeout",Toast.LENGTH_SHORT).show();
+            Log.d("lhl","timeout!");
+            //TO DO:  SHOW TIMEOUT!
+            Message timeout = new Message();
+            timeout.what = 999;
+            updatehandler.sendMessage(timeout);
             return "TIMEOUT";
         }
         while ((len = inStream.read(data)) != -1) {
