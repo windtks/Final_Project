@@ -84,17 +84,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_star_yellow_24dp"
-                    android:background="@null"/>
+                    android:background="@null"
+                    android:src="@drawable/ic_star_yellow_24dp" />
 
                 <TextView
                     android:id="@+id/translate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:textSize="18dp"
+                    android:text="翻译结果"
                     android:textColor="@android:color/black"
-                    android:text="翻译结果" />
+                    android:textSize="18dp" />
 
                 <TextView
                     android:id="@+id/basic_tag"
@@ -102,16 +102,16 @@
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@id/translate"
                     android:layout_marginTop="32dp"
-                    android:textColor="@android:color/black"
-                    android:text="词典词义:" />
+                    android:text="词典词义:"
+                    android:textColor="@android:color/black" />
 
                 <TextView
                     android:id="@+id/basic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@id/basic_tag"
-                    android:layout_marginTop="20dp"
                     android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
                     android:text="词典词义" />
 
                 <TextView
@@ -120,17 +120,27 @@
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@id/basic"
                     android:layout_marginTop="28dp"
-                    android:textColor="@android:color/black"
-                    android:text="网络词义:" />
+                    android:text="网络词义:"
+                    android:textColor="@android:color/black" />
 
                 <TextView
                     android:id="@+id/web"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@id/web_tag"
-                    android:layout_marginTop="20dp"
                     android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
                     android:text="网络词义" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true" />
+
+
             </RelativeLayout>
         </android.support.v7.widget.CardView>
 
