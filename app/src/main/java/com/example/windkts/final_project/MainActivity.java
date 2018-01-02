@@ -43,11 +43,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        initView();
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+
+    }
+    private void initView(){
+        //viewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         Adapter adapter = new Adapter(getSupportFragmentManager());
         adapter.addFragment(new HomeFragment());
@@ -71,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     static class Adapter extends FragmentPagerAdapter {

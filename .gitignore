@@ -7,3 +7,5 @@ Final_Project.iml
 /build
 /captures
 .externalNativeBuild
+gradle-wrapper.properties
+.gitignore
