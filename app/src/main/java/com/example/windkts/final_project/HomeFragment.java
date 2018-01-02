@@ -30,8 +30,8 @@ public class HomeFragment extends Fragment {
                         Intent intent = new Intent(getContext(),TranslateActivity.class);
                         intent.putExtra("query",input.getText().toString());
                         //测试用
-                        intent.putExtra("source","zh-CHS");
-                        intent.putExtra("target","EN");
+                        intent.putExtra("source","EN");
+                        intent.putExtra("target","zh-CHS");
                         getContext().startActivity(intent);
                         return true;
                     }

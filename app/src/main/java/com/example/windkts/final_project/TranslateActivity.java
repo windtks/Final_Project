@@ -15,6 +15,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.windkts.final_project.DataBase.DB;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,7 +48,7 @@ public class TranslateActivity extends AppCompatActivity {
     private String translation ="";
     private String web_trans = "";
     private String basic_trans ="";
-
+    private DB DBOP = new DB(this);
     String appKey ="7e69071cb0e80746";
     String query = "";
     String salt = String.valueOf(System.currentTimeMillis());
@@ -60,14 +62,14 @@ public class TranslateActivity extends AppCompatActivity {
             switch (msg.what){
                 //Start
                 case 0:
-                    translate_result.setVisibility(View.GONE);
-                    basic_result.setVisibility(View.GONE);
-                    basic_tag.setVisibility(View.GONE);
-                    web_result.setVisibility(View.GONE);
-                    web_tag.setVisibility(View.GONE);
-                    pb.setVisibility(View.GONE);
-                    warn.setVisibility(View.GONE);
-                    star.setVisibility(View.GONE);
+                    translate_result.setVisibility(View.INVISIBLE);
+                    basic_result.setVisibility(View.INVISIBLE);
+                    basic_tag.setVisibility(View.INVISIBLE);
+                    web_result.setVisibility(View.INVISIBLE);
+                    web_tag.setVisibility(View.INVISIBLE);
+                    pb.setVisibility(View.INVISIBLE);
+                    warn.setVisibility(View.INVISIBLE);
+                    star.setVisibility(View.INVISIBLE);
                     break;
                 //Timeout
                 case 999:
@@ -86,10 +88,18 @@ public class TranslateActivity extends AppCompatActivity {
                         basic_tag.setVisibility(View.VISIBLE);
                         basic_result.setText(basic_trans);
                     }
+                    else{
+                        basic_result.setVisibility(View.GONE);
+                        basic_tag.setVisibility(View.GONE);
+                    }
                     if(is_web){
                         web_result.setVisibility(View.VISIBLE);
                         web_tag.setVisibility(View.VISIBLE);
                         web_result.setText(web_trans);
+                    }
+                    else{
+                        web_result.setVisibility(View.GONE);
+                        web_tag.setVisibility(View.GONE);
                     }
                     break;
             }
@@ -181,7 +191,6 @@ public class TranslateActivity extends AppCompatActivity {
                     try{
                         for(int i = 0; i < JSONtranslation.length(); i++){
                             translation += JSONtranslation.getString(i);
-                            Log.d("lhl",String.valueOf(JSONtranslation.length()));
                         }
                     }catch (Exception e){
                         e.printStackTrace();
@@ -226,8 +235,14 @@ public class TranslateActivity extends AppCompatActivity {
                     //GET WEB END
                     Message s_msg = new Message();
                     s_msg.what = 1;
-
                     updatehandler.sendMessage(s_msg);
+                    try{
+                        DBOP.insert(query,translation);
+                        Log.e("lhl",String.valueOf(DBOP.queryAll().getCount()));
+                    }catch (Exception e){
+                        Log.e("lhl",String.valueOf(DBOP.queryAll().getCount()));
+                        e.printStackTrace();
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
