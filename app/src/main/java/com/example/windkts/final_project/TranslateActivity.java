@@ -134,7 +134,7 @@ public class TranslateActivity extends AppCompatActivity {
                                     JSONwebson.getString("value"));
                             for(int j = 0; j < JSONwebsonson.length(); j++){
                                 web_trans += JSONwebsonson.get(j);
-                                if(i != JSONwebsonson.length() - 1) web_trans += ", ";
+                                if(j != JSONwebsonson.length() - 1) web_trans += ", ";
                             }
                             web_trans += ";\n";
                         }
