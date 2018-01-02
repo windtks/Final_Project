@@ -100,8 +100,8 @@
                     android:id="@+id/basic_tag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/translate"
-                    android:layout_marginTop="32dp"
+                    android:layout_below="@id/translate"
+                    android:layout_marginTop="10dp"
                     android:text="词典词义:"
                     android:textColor="@android:color/black" />
 
@@ -109,17 +109,17 @@
                     android:id="@+id/basic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/basic_tag"
+                    android:layout_below="@id/basic_tag"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="6dp"
                     android:text="词典词义" />
 
                 <TextView
                     android:id="@+id/web_tag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/basic"
-                    android:layout_marginTop="28dp"
+                    android:layout_below="@id/basic"
+                    android:layout_marginTop="10dp"
                     android:text="网络词义:"
                     android:textColor="@android:color/black" />
 
@@ -127,9 +127,9 @@
                     android:id="@+id/web"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/web_tag"
+                    android:layout_below="@id/web_tag"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="6dp"
                     android:text="网络词义" />
 
                 <ProgressBar
