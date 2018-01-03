@@ -191,9 +191,7 @@ public class HomeFragment extends Fragment {
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface DialogInterface, int i) {
-                                if(history.get(position).getIs_liked() == 0){
-                                    historyOp.delete(history.get(position).getSource());
-                                }
+                                historyOp.delete(history.get(position).getSource());
                                 history.remove(position);
                                 Log.e("heros","when delete: "+String.valueOf(history.size()));
                                 mAdapter.notifyDataSetChanged();
