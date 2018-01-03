@@ -27,7 +27,8 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(btn_de.getContext());
-                builder.setTitle("确定删除记录？")
+                builder.setTitle("清除翻译历史记录？")
+                        .setMessage("系统将此应用中清除所有翻译历史记录。")
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface DialogInterface, int i) {
