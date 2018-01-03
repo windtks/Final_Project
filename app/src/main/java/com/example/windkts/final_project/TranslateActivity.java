@@ -101,7 +101,7 @@ public class TranslateActivity extends AppCompatActivity {
                         web_result.setVisibility(View.GONE);
                         web_tag.setVisibility(View.GONE);
                     }
-                    if(DBOP.query(query).getCount()==1){
+                    if(DBOP.queryisliked(query)){
                         star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
                     }
                     else{
@@ -137,12 +137,12 @@ public class TranslateActivity extends AppCompatActivity {
         star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(DBOP.query(query).getCount()==0){
-                    DBOP.insert(query,translation);
+                if(! DBOP.queryisliked(query)){
+                    DBOP.setisLiked(query,1);
                     star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
                 }
                 else{
-                    DBOP.delete(query);
+                    DBOP.setisLiked(query,0);
                     star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
                 }
                 Log.e("lhl",query);
@@ -255,6 +255,7 @@ public class TranslateActivity extends AppCompatActivity {
                     Message s_msg = new Message();
                     s_msg.what = 1;
                     updatehandler.sendMessage(s_msg);
+                    DBOP.insert(query,translation);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -274,7 +275,7 @@ public class TranslateActivity extends AppCompatActivity {
         basic_trans ="";
         is_basic = false;
         is_web = false;
-        if(DBOP.query(query).getCount()==1){
+        if(DBOP.queryisliked(query)){
             star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
         }
         else{

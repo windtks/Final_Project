@@ -27,7 +27,11 @@ public class DB extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("create table Translation (orginal_t text primary key, translated_t text, is_liked int )");
     }
-
+    public void rebuild(){
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS Translation");
+        db.execSQL("create table Translation (orginal_t text primary key, translated_t text, is_liked int )");
+    }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Translation");
@@ -56,6 +60,14 @@ public class DB extends SQLiteOpenHelper{
     public Cursor queryAllLike() {
         return getReadableDatabase().query(TABLE_NAME, null, "is_liked=?", new String[]{"1"}, null, null, null);
     }
+    public boolean queryisliked(String o) {
+        Cursor c = query(o);
+        if(c.moveToNext()){
+            int i = c.getInt(c.getColumnIndex("is_liked"));
+            return i == 1;
+        }
+        return false;
+    }
     public List<History> getAllData() {
         Cursor all = queryAll();
         List<History> list = new ArrayList<>();
@@ -68,10 +80,10 @@ public class DB extends SQLiteOpenHelper{
         }
         return list;
     }
-    public void setLiked(String o){
+    public void setisLiked(String o,int i){
         SQLiteDatabase localSQLiteDatabase = getWritableDatabase();
         ContentValues localContentValues = new ContentValues();
-        localContentValues.put("is_liked", 1);
+        localContentValues.put("is_liked", i);
         localSQLiteDatabase.update(TABLE_NAME, localContentValues, "orginal_t = ?", new String []{o});
         localSQLiteDatabase.close();
     }

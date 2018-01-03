@@ -102,8 +102,10 @@ public class HomeFragment extends Fragment {
             public void convert(ViewHolder holder, History h) {
                 TextView source = holder.getView(R.id.source);
                 TextView result = holder.getView(R.id.result);
+                ImageView star = holder.getView(R.id.star);
                 source.setText(h.getSource());
                 result.setText(h.getResult());
+                star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
                 //to do ..
             }
 
