@@ -1,13 +1,16 @@
 package com.example.windkts.final_project;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -101,12 +104,6 @@ public class TranslateActivity extends AppCompatActivity {
                         web_result.setVisibility(View.GONE);
                         web_tag.setVisibility(View.GONE);
                     }
-                    if(DBOP.queryisliked(query)){
-                        star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
-                    }
-                    else{
-                        star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
-                    }
                     break;
             }
         }
@@ -128,7 +125,13 @@ public class TranslateActivity extends AppCompatActivity {
         web_tag = findViewById(R.id.web_tag);
         warn = findViewById(R.id.warn);
         //Init View END
-
+        //收键盘
+        CardView cardView = findViewById(R.id.cardv);
+        cardView.setFocusable(true);
+        cardView.setFocusableInTouchMode(true);
+        cardView.requestFocus();
+        cardView.requestFocusFromTouch();
+        //
         input.setText(query);
         pb.setVisibility(View.GONE);
         translation ="";
@@ -147,7 +150,7 @@ public class TranslateActivity extends AppCompatActivity {
                 }
                 Log.e("lhl",query);
                 Log.e("lhl",translation);
-                Log.e("lhl",String.valueOf(DBOP.queryAll().getCount()));
+                Log.e("lhl",String.valueOf(DBOP.queryAllLike().getCount()));
             }
         });
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -156,6 +159,13 @@ public class TranslateActivity extends AppCompatActivity {
                 if(event != null && event.getKeyCode()== KeyEvent.KEYCODE_ENTER){
                     if(event.getAction() == KeyEvent.ACTION_DOWN && !input.getText().toString().equals("")){
                         Query();
+                        //收键盘
+//                        CardView cardView = findViewById(R.id.cardv);
+//                        cardView.setFocusable(true);
+//                        cardView.setFocusableInTouchMode(true);
+//                        cardView.requestFocus();
+//                        cardView.requestFocusFromTouch();
+                        //
                     }
                     return true;
                 }
@@ -262,6 +272,13 @@ public class TranslateActivity extends AppCompatActivity {
                 }
             }
         }).start();
+        DBOP = new DB(getApplicationContext());
+        if(DBOP.queryisliked(query)){
+            star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+        }
+        else{
+            star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+        }
         //Query ends
     }
     private void getInfo(){
