@@ -122,7 +122,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onLongClick(final int position) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(recyclerView.getContext());
-                builder.setTitle("删除人物？")
+                builder.setTitle("删除记录？")
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface DialogInterface, int i) {

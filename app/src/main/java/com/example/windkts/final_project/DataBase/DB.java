@@ -25,7 +25,7 @@ public class DB extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("create table Translation (orginal_t text primary key, translated_t text )");
+        sqLiteDatabase.execSQL("create table Translation (orginal_t text primary key, translated_t text, is_liked int )");
     }
 
     @Override
@@ -38,6 +38,7 @@ public class DB extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put("orginal_t",o);
         values.put("translated_t",t);
+        values.put("is_liked",0);
         db.insertOrThrow(TABLE_NAME,null,values);
         db.close();
     }
@@ -52,14 +53,17 @@ public class DB extends SQLiteOpenHelper{
     public Cursor queryAll() {
         return getReadableDatabase().query(TABLE_NAME, null, null, null, null, null, null);
     }
-
+    public Cursor queryAllLike() {
+        return getReadableDatabase().query(TABLE_NAME, null, "is_liked=?", new String[]{"1"}, null, null, null);
+    }
     public List<History> getAllData() {
         Cursor all = queryAll();
         List<History> list = new ArrayList<>();
         while(all.moveToNext()){
             String o = all.getString(all.getColumnIndex("orginal_t"));
             String r = all.getString(all.getColumnIndex("translated_t"));
-            History h = new History(o,r);
+            int l = all.getInt(all.getColumnIndex("is_liked"));
+            History h = new History(o,r,l);
             list.add(h);
         }
         return list;
