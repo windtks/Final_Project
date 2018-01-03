@@ -1,12 +1,14 @@
 package com.example.windkts.final_project;
-import java.util.Collections;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,12 +17,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseItemDraggableAdapter;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
+import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.example.windkts.final_project.DataBase.DB;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,9 +35,10 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
     private EditText input;
-    private View view=null;
+    private View view;
     private RecyclerView recyclerView;
     private  RvAdapter mAdapter ;
+    private  myAdapter newAdapter;
     private DB historyOp = new DB(getContext());
     private List<History> history = new ArrayList<>();
 
@@ -122,8 +129,9 @@ public class HomeFragment extends Fragment {
         history.clear();
         history.addAll(newData);
         Log.e("Frag","history: "+ String.valueOf(history.size()));
-        if(mAdapter!=null){
-            mAdapter.notifyDataSetChanged();
+        if(newAdapter!=null){
+
+            newAdapter.notifyDataSetChanged();
         }
     }
 
@@ -153,39 +161,37 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupRecyclerView(final RecyclerView recyclerView) {
+        newAdapter = new myAdapter(getContext(),R.layout.collected_item,history);
 
-        mAdapter = new RvAdapter <History>(getActivity(), R.layout.collected_item, history) {
+        newAdapter.setOnItemChildClickListener(new BaseItemDraggableAdapter.OnItemChildClickListener() {
             @Override
-            public void convert(ViewHolder holder, History h) {
-                TextView source = holder.getView(R.id.source);
-                TextView result = holder.getView(R.id.result);
-                ImageView star = holder.getView(R.id.star);
-                source.setText(h.getSource());
-                result.setText(h.getResult());
-                if(historyOp.queryisliked(h.getSource())){
-                    star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                if(history.get(position).getIs_liked()==0){
+                    view.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+                    history.get(position).setIs_liked(1);
+                    historyOp.setisLiked(history.get(position).getSource(),1);
                 }
-                else{
-                    star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+                else {
+                    view.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+                    history.get(position).setIs_liked(0);
+                    historyOp.setisLiked(history.get(position).getSource(),0);
                 }
             }
-
-        };
-
-        mAdapter.setOnItemClickListener (new RvAdapter.OnItemClickListener() {
+        });
+        newAdapter.setOnItemClickListener(new BaseItemDraggableAdapter.OnItemClickListener() {
             @Override
-            public void onClick(int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(getContext(), TranslateActivity.class);
-                //to do ..
                 History h = history.get(position);
                 intent.putExtra("query",h.getSource());
                 intent.putExtra("source",h.getLan_from());
                 intent.putExtra("target",h.getLan_to());
                 getContext().startActivity(intent);
-
             }
+        });
+        newAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
-            public void onLongClick(final int position) {
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, final int position) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(recyclerView.getContext());
                 builder.setTitle("删除记录？")
                         .setNegativeButton("取消", null)
@@ -193,20 +199,51 @@ public class HomeFragment extends Fragment {
                             public void onClick(DialogInterface DialogInterface, int i) {
                                 historyOp.delete(history.get(position).getSource());
                                 history.remove(position);
-                                Log.e("heros","when delete: "+String.valueOf(history.size()));
                                 mAdapter.notifyDataSetChanged();
                             }
                         });
                 builder.create().show();
+                return false;
+            }
+        });
+        OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
+            @Override
+            public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
+
+            }
+            @Override
+            public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
+
+            }
+            @Override
+            public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
+
+
+                if(!(historyOp.queryisliked(history.get(pos).getSource()))){
+                    historyOp.delete(history.get(pos).getSource());
+                }
+                history.remove(pos);
+                Log.e("heros","when delete: "+String.valueOf(history.size()));
+                newAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onItemViewClick(View v, int p) {
-
+            public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
+                canvas.drawColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
             }
-        });
+        };
+
+        ItemDragAndSwipeCallback mItemDragAndSwipeCallback = new ItemDragAndSwipeCallback(newAdapter);
+        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(mItemDragAndSwipeCallback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
+
+        //mItemDragAndSwipeCallback.setDragMoveFlags(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.UP | ItemTouchHelper.DOWN);
+        mItemDragAndSwipeCallback.setSwipeMoveFlags(ItemTouchHelper.START | ItemTouchHelper.END);
+        newAdapter.enableSwipeItem();
+        newAdapter.setOnItemSwipeListener(onItemSwipeListener);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        recyclerView.setAdapter(mAdapter);
+        recyclerView.setAdapter(newAdapter);
     }
 
 

@@ -1,24 +1,17 @@
 package com.example.windkts.final_project;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.chad.library.adapter.base.BaseItemDraggableAdapter;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.windkts.final_project.DataBase.DB;
 
 import java.util.ArrayList;
@@ -30,6 +23,7 @@ public class CollectedFragment extends Fragment {
     private View view=null;
     private RecyclerView recyclerview;
     private  RvAdapter mAdapter ;
+    private  myAdapter newAdapter;
     private DB historyOp = new DB(getContext());
     private List<History> history = new ArrayList<>();
 
@@ -64,59 +58,43 @@ public class CollectedFragment extends Fragment {
         history.clear();
         history.addAll(newData);
         Log.e("Frag","history: "+ String.valueOf(history.size()));
-        if(mAdapter!=null){
-            mAdapter.notifyDataSetChanged();
+        if(newAdapter!=null){
+            newAdapter.notifyDataSetChanged();
         }
     }
     private void setupRecyclerView(final RecyclerView recyclerView) {
 
-        mAdapter = new RvAdapter <History>(getActivity(), R.layout.collected_item, history) {
-            @Override
-            public void convert(ViewHolder holder, History h) {
-                TextView source = holder.getView(R.id.source);
-                TextView result = holder.getView(R.id.result);
-                ImageView star = holder.getView(R.id.star);
-                source.setText(h.getSource());
-                result.setText(h.getResult());
-                star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
-            }
+        newAdapter = new myAdapter(getContext(),R.layout.collected_item,history);
 
-        };
-        mAdapter.setOnItemClickListener (new RvAdapter.OnItemClickListener() {
+        newAdapter.setOnItemChildClickListener(new BaseItemDraggableAdapter.OnItemChildClickListener() {
             @Override
-            public void onClick(final int position) {
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                if(history.get(position).getIs_liked()==0){
+                    view.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+                    history.get(position).setIs_liked(1);
+                    historyOp.setisLiked(history.get(position).getSource(),1);
+                }
+                else {
+                    view.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+                    history.get(position).setIs_liked(0);
+                    historyOp.setisLiked(history.get(position).getSource(),0);
+                }
+            }
+        });
+        newAdapter.setOnItemClickListener(new BaseItemDraggableAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(getContext(), TranslateActivity.class);
                 History h = history.get(position);
                 intent.putExtra("query",h.getSource());
                 intent.putExtra("source",h.getLan_from());
                 intent.putExtra("target",h.getLan_to());
                 getContext().startActivity(intent);
-
-            }
-            @Override
-            public void onLongClick(final int position) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(recyclerView.getContext());
-                builder.setTitle("取消收藏？")
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface DialogInterface, int i) {
-                                History h = history.get(position);
-                                h.setIs_liked(0);
-                                historyOp.delete(h.getSource());
-                                history.remove(position);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        });
-                builder.create().show();
-            }
-
-            @Override
-            public void onItemViewClick(View v, int p) {
-
             }
         });
+
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        recyclerView.setAdapter(mAdapter);
+        recyclerView.setAdapter(newAdapter);
     }
 
 }
