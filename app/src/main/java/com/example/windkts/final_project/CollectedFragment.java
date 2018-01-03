@@ -14,8 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.windkts.final_project.DataBase.DB;
 
@@ -29,12 +31,15 @@ public class CollectedFragment extends Fragment {
     private  RvAdapter mAdapter ;
     private DB historyOp = new DB(getContext());
     private List<History> history = new ArrayList<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_collected, container, false);
 
         recyclerview = (RecyclerView) view.findViewById(R.id.recyclerview);
         setupRecyclerView(recyclerview);
+
+
         return view;
     }
 
@@ -69,17 +74,17 @@ public class CollectedFragment extends Fragment {
             public void convert(ViewHolder holder, History h) {
                 TextView source = holder.getView(R.id.source);
                 TextView result = holder.getView(R.id.result);
+                ImageView star = holder.getView(R.id.star);
                 source.setText(h.getSource());
                 result.setText(h.getResult());
-                //to do ...
+                star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
             }
 
         };
         mAdapter.setOnItemClickListener (new RvAdapter.OnItemClickListener() {
             @Override
-            public void onClick(int position) {
+            public void onClick(final int position) {
                 Intent intent = new Intent(getContext(), TranslateActivity.class);
-
                 History h = history.get(position);
                 intent.putExtra("query",h.getSource());
                 getContext().startActivity(intent);

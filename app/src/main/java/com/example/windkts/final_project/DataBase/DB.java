@@ -25,24 +25,26 @@ public class DB extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("create table Translation (orginal_t text primary key, translated_t text, is_liked int )");
+        sqLiteDatabase.execSQL("create table Translation (orginal_t text primary key, translated_t text, lan_from text, lan_to, is_liked int )");
     }
     public void rebuild(){
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS Translation");
-        db.execSQL("create table Translation (orginal_t text primary key, translated_t text, is_liked int )");
+        db.execSQL("create table Translation (orginal_t text primary key, translated_t text, lan_from text, lan_to, is_liked int )");
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Translation");
         onCreate(sqLiteDatabase);
     }
-    public void insert(String o, String t){
+    public void insert(String o, String t,String from, String to){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("orginal_t",o);
         values.put("translated_t",t);
         values.put("is_liked",0);
+        values.put("lan_from",from);
+        values.put("lan_to",to);
         db.insertOrThrow(TABLE_NAME,null,values);
         db.close();
     }
@@ -74,8 +76,10 @@ public class DB extends SQLiteOpenHelper{
         while(all.moveToNext()){
             String o = all.getString(all.getColumnIndex("orginal_t"));
             String r = all.getString(all.getColumnIndex("translated_t"));
+            String f = all.getString(all.getColumnIndex("lan_from"));
+            String t = all.getString(all.getColumnIndex("lan_to"));
             int l = all.getInt(all.getColumnIndex("is_liked"));
-            History h = new History(o,r,l);
+            History h = new History(o,r,l,f,t);
             list.add(h);
         }
         return list;

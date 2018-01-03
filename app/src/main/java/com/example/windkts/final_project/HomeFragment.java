@@ -105,8 +105,12 @@ public class HomeFragment extends Fragment {
                 ImageView star = holder.getView(R.id.star);
                 source.setText(h.getSource());
                 result.setText(h.getResult());
-                star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
-                //to do ..
+                if(historyOp.queryisliked(h.getSource())){
+                    star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+                }
+                else{
+                    star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+                }
             }
 
         };
@@ -130,8 +134,10 @@ public class HomeFragment extends Fragment {
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface DialogInterface, int i) {
-                                historyOp.delete(history.get(position).getSource());
                                 history.remove(position);
+                                if(!(historyOp.queryisliked(history.get(position).getSource()))){
+                                    historyOp.delete(history.get(position).getSource());
+                                }
                                 Log.e("heros","when delete: "+String.valueOf(history.size()));
                                 mAdapter.notifyDataSetChanged();
                             }
