@@ -26,10 +26,11 @@
 
         <ImageButton
             android:id="@+id/imageButton"
-            android:layout_width="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="20dp"
             android:layout_height="match_parent"
             android:layout_weight="0.3"
-            android:background="#FAFAFA"
+
             app:srcCompat="@drawable/ic_swap_horiz_black_24dp" />
 
         <Button
@@ -46,21 +47,25 @@
         android:layout_height="2dp"
         android:layout_width="match_parent"
         android:background="#DEDEDE" />
+
+
+
     <EditText
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="@null"
+        android:gravity="top"
         android:hint="@string/hint"
         android:inputType="textMultiLine"
-        android:gravity="top"
-        android:paddingStart="15dp"
         android:paddingEnd="15dp"
-        android:paddingTop="10dp"/>
+        android:paddingStart="15dp"
+        android:paddingTop="10dp" />
     <View
         android:layout_height="2dp"
         android:layout_width="match_parent"
         android:background="#BDBDBD" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
