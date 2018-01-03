@@ -144,6 +144,11 @@ public class HomeFragment extends Fragment {
                         });
                 builder.create().show();
             }
+
+            @Override
+            public void onItemViewClick(View v, int p) {
+
+            }
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(mAdapter);

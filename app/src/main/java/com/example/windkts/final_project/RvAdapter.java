@@ -67,6 +67,7 @@ public abstract class RvAdapter<T> extends RecyclerView.Adapter<ViewHolder>{
     public interface OnItemClickListener {
         void onClick(int position);
         void onLongClick(int position);
+        void onItemViewClick(View v, int p);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
