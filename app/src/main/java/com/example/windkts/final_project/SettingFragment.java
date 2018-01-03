@@ -1,7 +1,9 @@
 package com.example.windkts.final_project;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +26,18 @@ public class SettingFragment extends Fragment {
         btn_de.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DB DBOP = new DB(getContext());
-                DBOP.rebuild();
+                final AlertDialog.Builder builder = new AlertDialog.Builder(btn_de.getContext());
+                builder.setTitle("确定删除记录？")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface DialogInterface, int i) {
+                                DB DBOP = new DB(getContext());
+                                DBOP.rebuild();
+                            }
+                        });
+                builder.create().show();
+
+
             }
         });
         return view;

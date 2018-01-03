@@ -21,6 +21,8 @@ import java.util.List;
 
 public class CollectedFragment extends Fragment {
     private View view=null;
+    private View empty=null;
+
     private RecyclerView recyclerview;
     private  RvAdapter mAdapter ;
     private  myAdapter newAdapter;
@@ -30,7 +32,7 @@ public class CollectedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_collected, container, false);
-
+        empty = inflater.inflate(R.layout.emptyview, container, false);
         recyclerview = (RecyclerView) view.findViewById(R.id.recyclerview);
         setupRecyclerView(recyclerview);
 
@@ -92,7 +94,7 @@ public class CollectedFragment extends Fragment {
                 getContext().startActivity(intent);
             }
         });
-
+        newAdapter.setEmptyView(empty);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(newAdapter);
     }

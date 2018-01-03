@@ -95,7 +95,7 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(event!=null && event.getKeyCode()==KeyEvent.KEYCODE_ENTER){
-                    if(event.getAction()== KeyEvent.ACTION_UP){
+                    if(event.getAction()== KeyEvent.ACTION_UP && !input.getText().toString().equals("")){
                         Intent intent = new Intent(getContext(),TranslateActivity.class);
                         intent.putExtra("query",input.getText().toString());
                         //测试用
@@ -205,7 +205,7 @@ public class HomeFragment extends Fragment {
                             public void onClick(DialogInterface DialogInterface, int i) {
                                 historyOp.delete(history.get(position).getSource());
                                 history.remove(position);
-                                mAdapter.notifyDataSetChanged();
+                                newAdapter.notifyDataSetChanged();
                             }
                         });
                 builder.create().show();
@@ -223,11 +223,7 @@ public class HomeFragment extends Fragment {
             }
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-
-
-                if(!(historyOp.queryisliked(history.get(pos).getSource()))){
-                    historyOp.delete(history.get(pos).getSource());
-                }
+                historyOp.delete(history.get(pos).getSource());
                 history.remove(pos);
                 Log.e("heros","when delete: "+String.valueOf(history.size()));
                 newAdapter.notifyDataSetChanged();
