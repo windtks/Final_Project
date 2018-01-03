@@ -49,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
+
     }
+
     private void initView(){
         //viewPager
         viewPager = (ViewPager) findViewById(R.id.viewpager);
