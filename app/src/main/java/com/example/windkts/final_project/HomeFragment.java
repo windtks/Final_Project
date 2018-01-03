@@ -20,6 +20,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.windkts.final_project.DataBase.DB;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,7 @@ public class HomeFragment extends Fragment {
     private View view=null;
     private RecyclerView recyclerView;
     private  RvAdapter mAdapter ;
-    private HistoryOp historyOp;
+    private DB historyOp = new DB(getContext());
     private List<History> history = new ArrayList<>();
 
     private Button msource;
@@ -62,8 +64,8 @@ public class HomeFragment extends Fragment {
                         Intent intent = new Intent(getContext(),TranslateActivity.class);
                         intent.putExtra("query",input.getText().toString());
                         //测试用
-                        intent.putExtra("source","zh-CHS");
-                        intent.putExtra("target","EN");
+                        intent.putExtra("source","EN");
+                        intent.putExtra("target","zh-CHS");
                         getContext().startActivity(intent);
                         return true;
                     }
@@ -82,7 +84,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        HistoryOp = new HistoryOp(getActivity());
+        historyOp = new DB(getContext());
         List<History> newData = historyOp.getAllData();
         history.clear();
         history.addAll(newData);
@@ -110,21 +112,21 @@ public class HomeFragment extends Fragment {
         mAdapter.setOnItemClickListener (new RvAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                Intent intent = new Intent(getContext(), DetailActivity.class);
+                Intent intent = new Intent(getContext(), TranslateActivity.class);
                 //to do ..
                 History h = history.get(position);
-                intent.putExtra("history",h);
+                intent.putExtra("query",h.getSource());
                 getContext().startActivity(intent);
 
             }
             @Override
             public void onLongClick(final int position) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(recyclerView.getContext());
-                builder.setTitle("删除人物？")
+                builder.setTitle("删除记录？")
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface DialogInterface, int i) {
-                                historyOp.deleteDataByName(history.get(position).getSource());
+                                historyOp.delete(history.get(position).getSource());
                                 history.remove(position);
                                 Log.e("heros","when delete: "+String.valueOf(history.size()));
                                 mAdapter.notifyDataSetChanged();
