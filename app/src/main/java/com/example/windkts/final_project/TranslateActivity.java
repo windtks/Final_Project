@@ -1,6 +1,8 @@
 package com.example.windkts.final_project;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +12,9 @@ import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -31,11 +36,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import android.animation.ObjectAnimator;
-import android.content.Context;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
-import android.view.inputmethod.InputMethodManager;
 
 public class TranslateActivity extends AppCompatActivity {
     private EditText input;
@@ -122,13 +122,18 @@ public class TranslateActivity extends AppCompatActivity {
     private void initLan(){
         msource = (Button)findViewById(R.id.source_lan);
         mtarget = (Button)findViewById(R.id.target_lan);
-        mswitch = (ImageButton) findViewById(R.id.imageButton);
+        mswitch = (ImageButton) findViewById(R.id.swtch);
         mswitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String temp = msource.getText().toString();
                 msource.setText(mtarget.getText().toString());
                 mtarget.setText(temp);
+                from = language.getLan_code(msource.getText().toString());
+                to = language.getLan_code(mtarget.getText().toString());
+                final Animation rotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                rotateAnimation.setDuration(300);
+                mswitch.startAnimation(rotateAnimation);
             }
         });
         msource.setOnClickListener(new View.OnClickListener() {
@@ -200,14 +205,7 @@ public class TranslateActivity extends AppCompatActivity {
                 Log.e("lhl",String.valueOf(DBOP.queryAllLike().getCount()));
             }
         });
-        swtch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Animation rotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                rotateAnimation.setDuration(300);
-                swtch.startAnimation(rotateAnimation);
-            }
-        });
+
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

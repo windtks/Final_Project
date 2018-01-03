@@ -2,9 +2,6 @@ package com.example.windkts.final_project;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -14,10 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.windkts.final_project.DataBase.DB;
 
@@ -77,6 +72,7 @@ public class CollectedFragment extends Fragment {
                 ImageView star = holder.getView(R.id.star);
                 source.setText(h.getSource());
                 result.setText(h.getResult());
+
                 star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
             }
 
@@ -87,6 +83,8 @@ public class CollectedFragment extends Fragment {
                 Intent intent = new Intent(getContext(), TranslateActivity.class);
                 History h = history.get(position);
                 intent.putExtra("query",h.getSource());
+                intent.putExtra("source",h.getLan_from());
+                intent.putExtra("target",h.getLan_to());
                 getContext().startActivity(intent);
 
             }
