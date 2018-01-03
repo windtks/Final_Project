@@ -53,6 +53,45 @@
             android:layout_height="2dp"
             android:background="#DEDEDE" />
 
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ori_voice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_volume_up_black_24dp" />
+
+            <TextView
+                android:id="@+id/src_lan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/ori_voice"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_clear_black_24dp" />
+        </android.support.constraint.ConstraintLayout>
         <EditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
@@ -72,89 +111,106 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            >
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cardv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
 
-                android:layout_margin="8dp">
+                >
 
 
-                <RelativeLayout
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/relativeLayout2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="10dp"
-                    android:padding="10dp">
+                    android:layout_height="wrap_content"
+                    android:padding="8dp">
 
                     <ImageButton
                         android:id="@+id/imageButton2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:background="@drawable/ic_star_border_black_24dp" />
+                        android:background="@drawable/ic_star_border_black_24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/translate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="35dp"
                         android:text="翻译结果"
                         android:textColor="@android:color/black"
-                        android:textSize="18dp" />
+                        android:textSize="18dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/basic_tag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_below="@+id/translate"
                         android:layout_marginTop="15dp"
                         android:text="词典词义:"
-                        android:textColor="@android:color/black" />
+                        android:textColor="@android:color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/translate" />
 
                     <TextView
                         android:id="@+id/basic"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/basic_tag"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="6dp"
-                        android:text="词典词义" />
+                        android:text="词典词义"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/basic_tag" />
 
                     <TextView
                         android:id="@+id/web_tag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/basic"
                         android:layout_marginTop="10dp"
                         android:text="网络词义:"
-                        android:textColor="@android:color/black" />
+                        android:textColor="@android:color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/basic" />
 
                     <TextView
                         android:id="@+id/web"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/web_tag"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="6dp"
-                        android:text="网络词义" />
+                        android:text="网络词义"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/web_tag" />
 
                     <TextView
                         android:id="@+id/warn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignTop="@+id/basic"
                         android:layout_marginLeft="60dp"
-                        android:layout_toEndOf="@+id/translate"
                         android:text="请检查网络"
                         android:textSize="16sp"
-                        android:visibility="invisible" />
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toEndOf="@+id/translate"
+                        app:layout_constraintTop_toTopOf="@+id/basic" />
 
+                    <ImageView
+                        android:id="@+id/result_voice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_volume_up_black_24dp" />
 
-                </RelativeLayout>
+                </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
+
+
         </ScrollView>
 
 

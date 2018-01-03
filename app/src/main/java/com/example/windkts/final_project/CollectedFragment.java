@@ -2,6 +2,9 @@ package com.example.windkts.final_project;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -11,12 +14,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.windkts.final_project.DataBase.DB;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -53,8 +59,8 @@ public class CollectedFragment extends Fragment {
     }
     private void update(){
         historyOp = new DB(getContext());
-
-        List<History> newData = historyOp.getAllData();
+        List<History> newData = historyOp.getAllLike();
+        Collections.reverse(newData);
         history.clear();
         history.addAll(newData);
         Log.e("Frag","history: "+ String.valueOf(history.size()));
@@ -72,7 +78,6 @@ public class CollectedFragment extends Fragment {
                 ImageView star = holder.getView(R.id.star);
                 source.setText(h.getSource());
                 result.setText(h.getResult());
-
                 star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
             }
 

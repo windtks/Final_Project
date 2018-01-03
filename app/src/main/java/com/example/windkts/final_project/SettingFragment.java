@@ -24,6 +24,7 @@ public class SettingFragment extends Fragment {
         btn_de.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                DB DBOP = new DB(getContext());
                 DBOP.rebuild();
             }
         });

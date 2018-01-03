@@ -192,7 +192,7 @@ public class TranslateActivity extends AppCompatActivity {
         star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(! DBOP.queryisliked(query)){
+                if(!DBOP.queryisliked(query)){
                     DBOP.setisLiked(query,1);
                     star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
                 }

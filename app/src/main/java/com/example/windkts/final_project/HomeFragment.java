@@ -1,5 +1,5 @@
 package com.example.windkts.final_project;
-
+import java.util.Collections;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -106,16 +106,27 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        update();
+    }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.onHiddenChanged(isVisibleToUser);
+        if (isVisibleToUser) {   // 在最前端显示 相当于调用了onResume();
+            update();
+        }
+    }
+    private void update(){
         historyOp = new DB(getContext());
         List<History> newData = historyOp.getAllData();
+        Collections.reverse(newData);
         history.clear();
         history.addAll(newData);
-
+        Log.e("Frag","history: "+ String.valueOf(history.size()));
         if(mAdapter!=null){
             mAdapter.notifyDataSetChanged();
         }
-
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -180,11 +191,10 @@ public class HomeFragment extends Fragment {
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface DialogInterface, int i) {
-                                historyOp.delete(history.get(position).getSource());
-                                history.remove(position);
-                                if(!(historyOp.queryisliked(history.get(position).getSource()))){
+                                if(history.get(position).getIs_liked() == 0){
                                     historyOp.delete(history.get(position).getSource());
                                 }
+                                history.remove(position);
                                 Log.e("heros","when delete: "+String.valueOf(history.size()));
                                 mAdapter.notifyDataSetChanged();
                             }
