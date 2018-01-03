@@ -65,7 +65,6 @@ public class TranslateActivity extends AppCompatActivity {
     private String basic_trans ="";
     private DB DBOP = new DB(this);
     private Language language = new Language();
-    ObjectAnimator RerotateAnime;
     String appKey ="7e69071cb0e80746";
     String query = "";
     String salt = String.valueOf(System.currentTimeMillis());

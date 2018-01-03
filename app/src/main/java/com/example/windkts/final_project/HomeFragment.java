@@ -2,6 +2,7 @@ package com.example.windkts.final_project;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +15,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -61,6 +64,9 @@ public class HomeFragment extends Fragment {
                 String temp = msource.getText().toString();
                 msource.setText(mtarget.getText().toString());
                 mtarget.setText(temp);
+                final Animation rotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                rotateAnimation.setDuration(300);
+                mswitch.startAnimation(rotateAnimation);
             }
         });
         msource.setOnClickListener(new View.OnClickListener() {
@@ -229,7 +235,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
-                canvas.drawColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+                canvas.drawColor(ContextCompat.getColor(getContext(), R.color.g));
             }
         };
 
