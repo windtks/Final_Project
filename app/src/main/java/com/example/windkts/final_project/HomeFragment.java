@@ -7,6 +7,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,10 +19,25 @@ public class HomeFragment extends Fragment {
     private EditText input;
     private View view=null;
 
+    private Button msource;
+    private Button mtarget;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
         input = (EditText) view.findViewById(R.id.editText);
+
+        msource = (Button)view.findViewById(R.id.source_lan);
+        mtarget = (Button)view.findViewById(R.id.target_lan);
+
+        msource.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(),SelectActivity.class);
+//                intent.putExtra("source",msource.getText().toString());
+                startActivity(intent);
+            }
+        });
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
