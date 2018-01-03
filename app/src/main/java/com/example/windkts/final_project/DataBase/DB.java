@@ -25,7 +25,8 @@ public class DB extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Translation");
+        onCreate(sqLiteDatabase);
     }
     public void insert(String o, String t){
         SQLiteDatabase db = getWritableDatabase();
@@ -37,11 +38,11 @@ public class DB extends SQLiteOpenHelper{
     }
     public void delete(String o){
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_NAME,"orginal_t text=?",new String[] { o });
+        db.delete(TABLE_NAME,"orginal_t=?",new String[] { o });
         db.close();
     }
     public Cursor query(String o) {
-        return getReadableDatabase().query(TABLE_NAME, null, "orginal_t text=?", new String[]{o}, null, null, null);
+        return getReadableDatabase().query(TABLE_NAME, null, "orginal_t=?", new String[]{o}, null, null, null);
     }
     public Cursor queryAll() {
         return getReadableDatabase().query(TABLE_NAME, null, null, null, null, null, null);

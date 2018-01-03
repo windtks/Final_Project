@@ -101,6 +101,12 @@ public class TranslateActivity extends AppCompatActivity {
                         web_result.setVisibility(View.GONE);
                         web_tag.setVisibility(View.GONE);
                     }
+                    if(DBOP.query(query).getCount()==1){
+                        star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+                    }
+                    else{
+                        star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+                    }
                     break;
             }
         }
@@ -109,9 +115,6 @@ public class TranslateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_translate);
-
-
-
 
         //Init View START
         input = findViewById(R.id.editText);
@@ -131,16 +134,32 @@ public class TranslateActivity extends AppCompatActivity {
         translation ="";
         web_trans = "";
         basic_trans ="";
-
+        star.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(DBOP.query(query).getCount()==0){
+                    DBOP.insert(query,translation);
+                    star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+                }
+                else{
+                    DBOP.delete(query);
+                    star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+                }
+                Log.e("lhl",query);
+                Log.e("lhl",translation);
+                Log.e("lhl",String.valueOf(DBOP.queryAll().getCount()));
+            }
+        });
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(event != null && event.getKeyCode()== KeyEvent.KEYCODE_ENTER){
-                    if(event.getAction() == KeyEvent.ACTION_DOWN){
+                    if(event.getAction() == KeyEvent.ACTION_DOWN && !input.getText().toString().equals("")){
                         Query();
                     }
+                    return true;
                 }
-                return false;
+                return true;
             }
         });
         getInfo();
@@ -236,13 +255,6 @@ public class TranslateActivity extends AppCompatActivity {
                     Message s_msg = new Message();
                     s_msg.what = 1;
                     updatehandler.sendMessage(s_msg);
-                    try{
-                        DBOP.insert(query,translation);
-                        Log.e("lhl",String.valueOf(DBOP.queryAll().getCount()));
-                    }catch (Exception e){
-                        Log.e("lhl",String.valueOf(DBOP.queryAll().getCount()));
-                        e.printStackTrace();
-                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -262,6 +274,12 @@ public class TranslateActivity extends AppCompatActivity {
         basic_trans ="";
         is_basic = false;
         is_web = false;
+        if(DBOP.query(query).getCount()==1){
+            star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+        }
+        else{
+            star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+        }
     }
 
     /**

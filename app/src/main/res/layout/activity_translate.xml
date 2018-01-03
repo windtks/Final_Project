@@ -93,8 +93,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:background="@null"
-                        android:src="@drawable/ic_star_border_black_24dp" />
+                        android:background="@drawable/ic_star_border_black_24dp" />
 
                     <TextView
                         android:id="@+id/translate"
