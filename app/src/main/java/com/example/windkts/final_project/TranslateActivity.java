@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 public class TranslateActivity extends AppCompatActivity {
     private EditText input;
@@ -69,6 +71,7 @@ public class TranslateActivity extends AppCompatActivity {
         translation ="";
         web_trans = "";
         basic_trans ="";
+
         //Query Starts
         final Map params = new HashMap();
         params.put("q", query);
@@ -83,10 +86,13 @@ public class TranslateActivity extends AppCompatActivity {
                 try{
                     //warning: changing UI should only be done in Main Thread!
                     JSONArray JSONtranslation = null;
+                    JSONArray JSONexp = null;
                     Log.d("lhl","new thread!");
                     JSONObject result = new JSONObject(readParse(getUrlWithQueryString("http://openapi.youdao.com/api",params)));
                     Log.d("lhl",result.toString());
                     //To do: JSON to String!
+
+                    //GET Translation
                     try{
                         JSONtranslation = new JSONArray(result.getString("translation"));
                         Log.e("lhl","got!");
@@ -101,15 +107,45 @@ public class TranslateActivity extends AppCompatActivity {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+                    //GET Translation End
+                    //GET BASIC
                     try{
-                        JSONObject jsonObject1 = (JSONObject) result.get("basic");
+                        JSONObject jsonBasic = (JSONObject) result.get("basic");
                         is_basic = true;
-
+                        JSONexp = new JSONArray(jsonBasic.getString("explains"));
                     }catch (Exception e){
                         is_basic = false;
                     }
+                    try{
+                        for(int i = 1; i <= JSONexp.length(); i++){
+                            basic_trans += "("+i+")"+" "+JSONexp.getString(i)+"\n";
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    //GET BASIC END
+                    //GET WEB START
+                    try{
+                        JSONArray JSONweb = result.getJSONArray("web");
+                        for(int i = 0 ;i< JSONweb.length(); i++){
+                            JSONObject JSONwebson = (JSONObject) JSONweb.get(i);
+                            web_trans += JSONwebson.getString("key")+" :\n";
+                            JSONArray JSONwebsonson = new JSONArray(
+                                    JSONwebson.getString("value"));
+                            for(int j = 0; j < JSONwebsonson.length(); j++){
+                                web_trans += JSONwebsonson.get(j);
+                                if(i != JSONwebsonson.length() - 1) web_trans += ", ";
+                            }
+                            web_trans += ";\n";
+                        }
+                        is_web = true;
+                    }catch (Exception e){
+                        is_web = false;
+                        e.printStackTrace();
+                    }
+                    //GET WEB END
                     Log.d("lhl","prepost");
-                    TUpdateUi updateUi = new TUpdateUi(translation,"b3",result.toString());
+                    TUpdateUi updateUi = new TUpdateUi(translation,web_trans,basic_trans);
                     Log.d("lhl","post");
                     updatehandler.post(updateUi);
                 }catch (Exception e){
@@ -118,6 +154,8 @@ public class TranslateActivity extends AppCompatActivity {
             }
         }).start();
         //Query ends
+
+
     }
 
     private void getInfo(){
@@ -153,13 +191,20 @@ public class TranslateActivity extends AppCompatActivity {
      * @return
      * @throws Exception
      */
-    public static String readParse(String urlPath) throws Exception {
+    public String readParse(String urlPath) throws Exception {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] data = new byte[1024];
         int len = 0;
         URL url = new URL(urlPath);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        InputStream inStream = conn.getInputStream();
+        InputStream inStream = null;
+        try{
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);
+            inStream = conn.getInputStream();
+        }catch (Exception e){
+            Toast.makeText(this,"Timeout",Toast.LENGTH_SHORT).show();
+            return "TIMEOUT";
+        }
         while ((len = inStream.read(data)) != -1) {
             outStream.write(data, 0, len);
         }
