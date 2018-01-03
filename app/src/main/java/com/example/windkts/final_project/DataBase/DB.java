@@ -68,4 +68,11 @@ public class DB extends SQLiteOpenHelper{
         }
         return list;
     }
+    public void setLiked(String o){
+        SQLiteDatabase localSQLiteDatabase = getWritableDatabase();
+        ContentValues localContentValues = new ContentValues();
+        localContentValues.put("is_liked", 1);
+        localSQLiteDatabase.update(TABLE_NAME, localContentValues, "orginal_t = ?", new String []{o});
+        localSQLiteDatabase.close();
+    }
 }
