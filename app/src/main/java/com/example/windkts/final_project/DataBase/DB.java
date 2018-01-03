@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.windkts.final_project.History;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by fwaa2 on 2018.01.02.
  */
@@ -46,5 +51,17 @@ public class DB extends SQLiteOpenHelper{
     }
     public Cursor queryAll() {
         return getReadableDatabase().query(TABLE_NAME, null, null, null, null, null, null);
+    }
+
+    public List<History> getAllData() {
+        Cursor all = queryAll();
+        List<History> list = new ArrayList<>();
+        while(all.moveToNext()){
+            String o = all.getString(all.getColumnIndex("orginal_t"));
+            String r = all.getString(all.getColumnIndex("translated_t"));
+            History h = new History(o,r);
+            list.add(h);
+        }
+        return list;
     }
 }

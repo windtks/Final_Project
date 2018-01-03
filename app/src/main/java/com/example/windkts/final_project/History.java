@@ -9,9 +9,9 @@ public class History {
     private String result;
     private int is_liked;
 
-    History(){
-        this.source = "";
-        this.result = "";
+    public History(String a,String b){
+        this.source = a;
+        this.result = b;
         this.is_liked = 0;
     }
 
