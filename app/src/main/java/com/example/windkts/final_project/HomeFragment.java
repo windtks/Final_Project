@@ -118,6 +118,8 @@ public class HomeFragment extends Fragment {
                 //to do ..
                 History h = history.get(position);
                 intent.putExtra("query",h.getSource());
+                intent.putExtra("source","EN");
+                intent.putExtra("target","zh-CHS");
                 getContext().startActivity(intent);
 
             }

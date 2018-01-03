@@ -168,6 +168,7 @@ public class TranslateActivity extends AppCompatActivity {
     }
     public void Query(){
         query = input.getText().toString();
+        Log.d("lhl",query);
         salt = String.valueOf(System.currentTimeMillis());
         sign = md5(appKey + query + salt+ "j8saelWS6ebet7gzHGI9z17my2vQ38Wk");
         //from = , to =
