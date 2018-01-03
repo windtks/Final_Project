@@ -151,8 +151,12 @@ public class HomeFragment extends Fragment {
                 ImageView star = holder.getView(R.id.star);
                 source.setText(h.getSource());
                 result.setText(h.getResult());
-                star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
-                //to do ..
+                if(historyOp.queryisliked(h.getSource())){
+                    star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+                }
+                else{
+                    star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+                }
             }
 
         };
@@ -164,8 +168,8 @@ public class HomeFragment extends Fragment {
                 //to do ..
                 History h = history.get(position);
                 intent.putExtra("query",h.getSource());
-                intent.putExtra("source",msource.getText().toString());
-                intent.putExtra("target",mtarget.getText().toString());
+                intent.putExtra("source",h.getLan_from());
+                intent.putExtra("target",h.getLan_to());
                 getContext().startActivity(intent);
 
             }
@@ -178,11 +182,19 @@ public class HomeFragment extends Fragment {
                             public void onClick(DialogInterface DialogInterface, int i) {
                                 historyOp.delete(history.get(position).getSource());
                                 history.remove(position);
+                                if(!(historyOp.queryisliked(history.get(position).getSource()))){
+                                    historyOp.delete(history.get(position).getSource());
+                                }
                                 Log.e("heros","when delete: "+String.valueOf(history.size()));
                                 mAdapter.notifyDataSetChanged();
                             }
                         });
                 builder.create().show();
+            }
+
+            @Override
+            public void onItemViewClick(View v, int p) {
+
             }
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));

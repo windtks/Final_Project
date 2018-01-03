@@ -31,6 +31,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.view.inputmethod.InputMethodManager;
 
 public class TranslateActivity extends AppCompatActivity {
     private EditText input;
@@ -41,6 +46,7 @@ public class TranslateActivity extends AppCompatActivity {
     private TextView web_tag;
     private TextView warn;
     private ImageButton star;
+    private ImageButton swtch;
     private ProgressBar pb;
     private Button s_l;
     private boolean is_basic = false;
@@ -50,6 +56,7 @@ public class TranslateActivity extends AppCompatActivity {
     private String basic_trans ="";
     private DB DBOP = new DB(this);
     private Language language = new Language();
+    ObjectAnimator RerotateAnime;
     String appKey ="7e69071cb0e80746";
     String query = "";
     String salt = String.valueOf(System.currentTimeMillis());
@@ -163,6 +170,7 @@ public class TranslateActivity extends AppCompatActivity {
         basic_tag = findViewById(R.id.basic_tag);
         web_tag = findViewById(R.id.web_tag);
         warn = findViewById(R.id.warn);
+        swtch = findViewById(R.id.swtch);
         //Init View END
         //收键盘
         CardView cardView = findViewById(R.id.cardv);
@@ -192,6 +200,14 @@ public class TranslateActivity extends AppCompatActivity {
                 Log.e("lhl",String.valueOf(DBOP.queryAllLike().getCount()));
             }
         });
+        swtch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Animation rotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                rotateAnimation.setDuration(300);
+                swtch.startAnimation(rotateAnimation);
+            }
+        });
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -199,11 +215,14 @@ public class TranslateActivity extends AppCompatActivity {
                     if(event.getAction() == KeyEvent.ACTION_DOWN && !input.getText().toString().equals("")){
                         Query();
                         //收键盘
-//                        CardView cardView = findViewById(R.id.cardv);
-//                        cardView.setFocusable(true);
-//                        cardView.setFocusableInTouchMode(true);
-//                        cardView.requestFocus();
-//                        cardView.requestFocusFromTouch();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        assert imm != null;
+                        imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
+                        CardView cardView = findViewById(R.id.cardv);
+                        cardView.setFocusable(true);
+                        cardView.setFocusableInTouchMode(true);
+                        cardView.requestFocus();
+                        cardView.requestFocusFromTouch();
                         //
                     }
                     return true;
@@ -328,7 +347,7 @@ public class TranslateActivity extends AppCompatActivity {
                     Message s_msg = new Message();
                     s_msg.what = 1;
                     updatehandler.sendMessage(s_msg);
-                    DBOP.insert(query,translation);
+                    DBOP.insert(query,translation,from,to);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
