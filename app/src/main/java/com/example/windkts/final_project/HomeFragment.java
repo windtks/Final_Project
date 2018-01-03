@@ -20,6 +20,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
@@ -58,6 +59,8 @@ public class HomeFragment extends Fragment {
         msource = (Button)view.findViewById(R.id.source_lan);
         mtarget = (Button)view.findViewById(R.id.target_lan);
         mswitch = (ImageButton) view.findViewById(R.id.imageButton);
+
+
         mswitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,6 +104,7 @@ public class HomeFragment extends Fragment {
                         //测试用
                         intent.putExtra("source",language.getLan_code(msource.getText().toString()));
                         intent.putExtra("target",language.getLan_code(mtarget.getText().toString()));
+                        input.setText("");
                         getContext().startActivity(intent);
                         return true;
                     }
@@ -111,6 +115,12 @@ public class HomeFragment extends Fragment {
         });
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        //收键盘
+        recyclerView.setFocusable(true);
+        recyclerView.setFocusableInTouchMode(true);
+        recyclerView.requestFocus();
+        recyclerView.requestFocusFromTouch();
+        //
         setupRecyclerView(recyclerView);
 
         return view;
@@ -175,12 +185,12 @@ public class HomeFragment extends Fragment {
                 if(history.get(position).getIs_liked()==0){
                     view.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
                     history.get(position).setIs_liked(1);
-                    historyOp.setisLiked(history.get(position).getSource(),1);
+                    historyOp.setisLiked(history.get(position).getResult(),1);
                 }
                 else {
                     view.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
                     history.get(position).setIs_liked(0);
-                    historyOp.setisLiked(history.get(position).getSource(),0);
+                    historyOp.setisLiked(history.get(position).getResult(),0);
                 }
             }
         });
@@ -192,6 +202,7 @@ public class HomeFragment extends Fragment {
                 intent.putExtra("query",h.getSource());
                 intent.putExtra("source",h.getLan_from());
                 intent.putExtra("target",h.getLan_to());
+                intent.putExtra("t",h.getResult());
                 getContext().startActivity(intent);
             }
         });
@@ -203,7 +214,7 @@ public class HomeFragment extends Fragment {
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface DialogInterface, int i) {
-                                historyOp.delete(history.get(position).getSource());
+                                historyOp.delete(history.get(position).getResult());
                                 history.remove(position);
                                 newAdapter.notifyDataSetChanged();
                             }
@@ -223,7 +234,7 @@ public class HomeFragment extends Fragment {
             }
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-                historyOp.delete(history.get(pos).getSource());
+                historyOp.delete(history.get(pos).getResult());
                 history.remove(pos);
                 Log.e("heros","when delete: "+String.valueOf(history.size()));
                 newAdapter.notifyDataSetChanged();

@@ -74,12 +74,12 @@ public class CollectedFragment extends Fragment {
                 if(history.get(position).getIs_liked()==0){
                     view.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
                     history.get(position).setIs_liked(1);
-                    historyOp.setisLiked(history.get(position).getSource(),1);
+                    historyOp.setisLiked(history.get(position).getResult(),1);
                 }
                 else {
                     view.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
                     history.get(position).setIs_liked(0);
-                    historyOp.setisLiked(history.get(position).getSource(),0);
+                    historyOp.setisLiked(history.get(position).getResult(),0);
                 }
             }
         });
@@ -91,6 +91,7 @@ public class CollectedFragment extends Fragment {
                 intent.putExtra("query",h.getSource());
                 intent.putExtra("source",h.getLan_from());
                 intent.putExtra("target",h.getLan_to());
+                intent.putExtra("t",h.getResult());
                 getContext().startActivity(intent);
             }
         });

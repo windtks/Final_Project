@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.windkts.final_project.DataBase.DB;
@@ -207,7 +208,7 @@ public class TranslateActivity extends AppCompatActivity {
         clr = findViewById(R.id.et_clear);
         //Init View END
         //收键盘
-        CardView cardView = findViewById(R.id.cardv);
+        ScrollView cardView = findViewById(R.id.srcv);
         cardView.setFocusable(true);
         cardView.setFocusableInTouchMode(true);
         cardView.requestFocus();
@@ -245,12 +246,12 @@ public class TranslateActivity extends AppCompatActivity {
         star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!DBOP.queryisliked(query)){
-                    DBOP.setisLiked(query,1);
+                if(!DBOP.queryisliked(translation)){
+                    DBOP.setisLiked(translation,1);
                     star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
                 }
                 else{
-                    DBOP.setisLiked(query,0);
+                    DBOP.setisLiked(translation,0);
                     star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
                 }
                 Log.e("lhl",query);
@@ -269,7 +270,7 @@ public class TranslateActivity extends AppCompatActivity {
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         assert imm != null;
                         imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                        CardView cardView = findViewById(R.id.cardv);
+                        ScrollView cardView = findViewById(R.id.srcv);
                         cardView.setFocusable(true);
                         cardView.setFocusableInTouchMode(true);
                         cardView.requestFocus();
@@ -408,12 +409,7 @@ public class TranslateActivity extends AppCompatActivity {
         src_lan.setText(language.getLan_name(from));
         tra_lan.setText(language.getLan_name(to));
         DBOP = new DB(getApplicationContext());
-        if(DBOP.queryisliked(query)){
-            star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
-        }
-        else{
-            star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
-        }
+        Log.e("lhl","tras:"+translation);
         //Query ends
     }
     private void getInfo(){
@@ -428,11 +424,16 @@ public class TranslateActivity extends AppCompatActivity {
         basic_trans ="";
         is_basic = false;
         is_web = false;
-        if(DBOP.queryisliked(query)){
-            star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
-        }
-        else{
-            star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+        try{
+           String t = intent.getStringExtra("t");
+            if(DBOP.queryisliked(t)){
+                star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
+            }
+            else{
+                star.setBackground(getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+            }
+        }catch (Exception e){
+           e.printStackTrace();
         }
     }
 
