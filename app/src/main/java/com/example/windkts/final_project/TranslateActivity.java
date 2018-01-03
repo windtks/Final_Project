@@ -1,22 +1,20 @@
 package com.example.windkts.final_project;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.windkts.final_project.DataBase.DB;
 
@@ -33,7 +31,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 public class TranslateActivity extends AppCompatActivity {
     private EditText input;
@@ -52,12 +49,14 @@ public class TranslateActivity extends AppCompatActivity {
     private String web_trans = "";
     private String basic_trans ="";
     private DB DBOP = new DB(this);
+    private Language language = new Language();
     String appKey ="7e69071cb0e80746";
     String query = "";
     String salt = String.valueOf(System.currentTimeMillis());
     String from = "";
     String to = "";
     String sign = "";
+    @SuppressLint("HandlerLeak")
     private Handler updatehandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -108,6 +107,46 @@ public class TranslateActivity extends AppCompatActivity {
             }
         }
     };
+
+    private Button msource;
+    private Button mtarget;
+    private ImageButton mswitch;
+
+    private void initLan(){
+        msource = (Button)findViewById(R.id.source_lan);
+        mtarget = (Button)findViewById(R.id.target_lan);
+        mswitch = (ImageButton) findViewById(R.id.imageButton);
+        mswitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String temp = msource.getText().toString();
+                msource.setText(mtarget.getText().toString());
+                mtarget.setText(temp);
+            }
+        });
+        msource.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(TranslateActivity.this,SelectActivity.class);
+                intent.putExtra("title","源语言");
+
+//              intent.putExtra("source",msource.getText().toString());
+                startActivityForResult(intent,1);
+            }
+        });
+        mtarget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TranslateActivity.this,SelectActivity.class);
+                intent.putExtra("title","目标语言");
+
+//              intent.putExtra("source",msource.getText().toString());
+                startActivityForResult(intent,2);
+            }
+        });
+        msource.setText(language.getLan_name(from));
+        mtarget.setText(language.getLan_name(to));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,8 +212,31 @@ public class TranslateActivity extends AppCompatActivity {
             }
         });
         getInfo();
+        initLan();
         Query();
 
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        switch (requestCode) {
+            case 1:
+                if (resultCode == RESULT_OK) {
+                    if(data.getStringExtra("choice")!=null){
+                        msource.setText(data.getStringExtra("choice"));
+                        from = language.getLan_code(data.getStringExtra("choice"));
+                    }
+                }
+                break;
+            case 2:
+                if (resultCode == RESULT_OK) {
+                    if(data.getStringExtra("choice")!=null){
+                        mtarget.setText(data.getStringExtra("choice"));
+                        to = language.getLan_code(data.getStringExtra("choice"));
+                    }
+                }
+                break;
+            default:
+        }
     }
     public void Query(){
         query = input.getText().toString();

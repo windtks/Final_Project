@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <TextView
         android:id="@+id/lan"
         android:text="英语"
         android:gravity="start|center"
         android:layout_marginTop="8dp"
-        android:layout_marginLeft="5dp"
-        android:paddingLeft="18dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="8dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
         android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="30dp" />
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:background="#BDBDBD" />
+
 </LinearLayout>

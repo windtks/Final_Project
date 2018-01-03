@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +16,8 @@ import java.util.List;
 public class SelectActivity extends AppCompatActivity {
 
     private RvAdapter mAdapter;
-    private List<Language> languages = new ArrayList<>();
+    public Language lan = new Language();
+    private List<String> languages = lan.getAllLanguage();;
     private RecyclerView recyclerView;
 
     @Override
@@ -25,34 +25,34 @@ public class SelectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.language_select);
 
-        recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(mAdapter);
-        mAdapter = new RvAdapter<Language>(SelectActivity.this,R.layout.language_item,languages){
+        Intent intent = getIntent();
+        this.setTitle(intent.getStringExtra("title"));
+        recyclerView = findViewById(R.id.language);
+
+        mAdapter = new RvAdapter<String>(this,R.layout.language_item,languages){
             @Override
-            public void convert(ViewHolder holder, Language language){
+            public void convert(ViewHolder holder, String language){
                 TextView lan = holder.getView(R.id.lan);
+                lan.setText(language);
             }
         };
 
         mAdapter.setOnItemClickListener(new RvAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                Intent intent = new Intent(SelectActivity.this,MainActivity.class);
-                String chosed = languages.get(position).getLan();
-                intent.putExtra("choice",chosed);
-                startActivity(intent);
+                Intent intent = new Intent();
+                String choice = languages.get(position);
+                intent.putExtra("choice",choice);
+                setResult(RESULT_OK,intent);
                 finish();
             }
 
             @Override
             public void onLongClick(int position) {
-                Intent intent = new Intent(SelectActivity.this,MainActivity.class);
-                String chosed = languages.get(position).getLan();
-                intent.putExtra("choice",chosed);
-                startActivity(intent);
-                finish();
+
             }
         });
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(mAdapter);
     }
 }

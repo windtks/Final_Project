@@ -2,10 +2,7 @@ package com.example.windkts.final_project;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.service.autofill.FillEventHistory;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,6 +37,8 @@ public class HomeFragment extends Fragment {
 
     private Button msource;
     private Button mtarget;
+    private ImageButton mswitch;
+    private Language language = new Language();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,15 +47,37 @@ public class HomeFragment extends Fragment {
 
         msource = (Button)view.findViewById(R.id.source_lan);
         mtarget = (Button)view.findViewById(R.id.target_lan);
-
+        mswitch = (ImageButton) view.findViewById(R.id.imageButton);
+        mswitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String temp = msource.getText().toString();
+                msource.setText(mtarget.getText().toString());
+                mtarget.setText(temp);
+            }
+        });
         msource.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(),SelectActivity.class);
-//                intent.putExtra("source",msource.getText().toString());
-                startActivity(intent);
+                intent.putExtra("title","源语言");
+
+//              intent.putExtra("source",msource.getText().toString());
+                startActivityForResult(intent,1);
             }
         });
+        mtarget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(),SelectActivity.class);
+                intent.putExtra("title","目标语言");
+
+//              intent.putExtra("source",msource.getText().toString());
+                startActivityForResult(intent,2);
+            }
+        });
+        msource.setText("中文");
+        mtarget.setText("英文");
         input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -64,8 +86,8 @@ public class HomeFragment extends Fragment {
                         Intent intent = new Intent(getContext(),TranslateActivity.class);
                         intent.putExtra("query",input.getText().toString());
                         //测试用
-                        intent.putExtra("source","EN");
-                        intent.putExtra("target","zh-CHS");
+                        intent.putExtra("source",language.getLan_code(msource.getText().toString()));
+                        intent.putExtra("target",language.getLan_code(mtarget.getText().toString()));
                         getContext().startActivity(intent);
                         return true;
                     }
@@ -95,6 +117,30 @@ public class HomeFragment extends Fragment {
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 1:
+                if (resultCode == getActivity().RESULT_OK) {
+                    if(data.getStringExtra("choice")!=null){
+                        msource.setText(data.getStringExtra("choice"));
+
+                    }
+                }
+                break;
+            case 2:
+                if (resultCode == getActivity().RESULT_OK) {
+                    if(data.getStringExtra("choice")!=null){
+                        mtarget.setText(data.getStringExtra("choice"));
+
+                    }
+                }
+                break;
+            default:
+        }
+    }
+
     private void setupRecyclerView(final RecyclerView recyclerView) {
 
         mAdapter = new RvAdapter <History>(getActivity(), R.layout.collected_item, history) {
@@ -118,8 +164,8 @@ public class HomeFragment extends Fragment {
                 //to do ..
                 History h = history.get(position);
                 intent.putExtra("query",h.getSource());
-                intent.putExtra("source","EN");
-                intent.putExtra("target","zh-CHS");
+                intent.putExtra("source",msource.getText().toString());
+                intent.putExtra("target",mtarget.getText().toString());
                 getContext().startActivity(intent);
 
             }
