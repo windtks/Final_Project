@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -45,10 +49,15 @@ public class TranslateActivity extends AppCompatActivity {
     private TextView basic_tag;
     private TextView web_tag;
     private TextView warn;
+    private TextView src_lan;
+    private TextView tra_lan;
+    private ImageView clr;
+    private ImageView res_v;
     private ImageButton star;
     private ImageButton swtch;
     private ProgressBar pb;
     private Button s_l;
+    private ConstraintLayout toolbar;
     private boolean is_basic = false;
     private boolean is_web = false;
     private String translation ="";
@@ -78,6 +87,8 @@ public class TranslateActivity extends AppCompatActivity {
                     web_tag.setVisibility(View.INVISIBLE);
                     pb.setVisibility(View.INVISIBLE);
                     warn.setVisibility(View.INVISIBLE);
+                    res_v.setVisibility(View.INVISIBLE);
+                    tra_lan.setVisibility(View.INVISIBLE);
                     star.setVisibility(View.INVISIBLE);
                     break;
                 //Timeout
@@ -92,6 +103,8 @@ public class TranslateActivity extends AppCompatActivity {
                     translate_result.setVisibility(View.VISIBLE);
                     translate_result.setText(translation);
                     star.setVisibility(View.VISIBLE);
+                    res_v.setVisibility(View.VISIBLE);
+                    tra_lan.setVisibility(View.VISIBLE);
                     if(is_basic){
                         basic_result.setVisibility(View.VISIBLE);
                         basic_tag.setVisibility(View.VISIBLE);
@@ -129,6 +142,7 @@ public class TranslateActivity extends AppCompatActivity {
                 String temp = msource.getText().toString();
                 msource.setText(mtarget.getText().toString());
                 mtarget.setText(temp);
+                src_lan.setText(msource .getText().toString());
                 from = language.getLan_code(msource.getText().toString());
                 to = language.getLan_code(mtarget.getText().toString());
                 final Animation rotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -176,6 +190,11 @@ public class TranslateActivity extends AppCompatActivity {
         web_tag = findViewById(R.id.web_tag);
         warn = findViewById(R.id.warn);
         swtch = findViewById(R.id.swtch);
+        res_v = findViewById(R.id.result_voice);
+        tra_lan = findViewById(R.id.tra_lan);
+        src_lan = findViewById(R.id.src_lan);
+        toolbar = findViewById(R.id.tool_bar);
+        clr = findViewById(R.id.et_clear);
         //Init View END
         //收键盘
         CardView cardView = findViewById(R.id.cardv);
@@ -184,11 +203,35 @@ public class TranslateActivity extends AppCompatActivity {
         cardView.requestFocus();
         cardView.requestFocusFromTouch();
         //
+        toolbar.setVisibility(View.GONE);
         input.setText(query);
         pb.setVisibility(View.GONE);
         translation ="";
         web_trans = "";
         basic_trans ="";
+        clr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                input.setText("");
+                toolbar.setVisibility(View.GONE);
+            }
+        });
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                toolbar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -241,6 +284,7 @@ public class TranslateActivity extends AppCompatActivity {
                     if(data.getStringExtra("choice")!=null){
                         msource.setText(data.getStringExtra("choice"));
                         from = language.getLan_code(data.getStringExtra("choice"));
+                        src_lan.setText(data.getStringExtra("choice"));
                     }
                 }
                 break;
@@ -351,6 +395,8 @@ public class TranslateActivity extends AppCompatActivity {
                 }
             }
         }).start();
+        src_lan.setText(language.getLan_name(from));
+        tra_lan.setText(language.getLan_name(to));
         DBOP = new DB(getApplicationContext());
         if(DBOP.queryisliked(query)){
             star.setBackground(getResources().getDrawable(R.drawable.ic_star_yellow_24dp));
