@@ -9,8 +9,8 @@ import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,8 +26,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.windkts.final_project.DataBase.DB;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechUtility;
+import com.iflytek.cloud.SynthesizerListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,18 +50,10 @@ import java.util.Map;
 
 public class TranslateActivity extends AppCompatActivity {
     private EditText input;
-    private TextView translate_result;
-    private TextView web_result;
-    private TextView basic_result;
-    private TextView basic_tag;
-    private TextView web_tag;
-    private TextView warn;
-    private TextView src_lan;
-    private TextView tra_lan;
-    private ImageView clr;
-    private ImageView res_v;
-    private ImageButton star;
-    private ImageButton swtch;
+    private TextView translate_result,web_result,basic_result,
+            basic_tag,web_tag,warn,src_lan,tra_lan;
+    private ImageView clr,ori_voice,result_voice;
+    private ImageButton star,swtch;
     private ProgressBar pb;
     private Button s_l;
     private ConstraintLayout toolbar;
@@ -67,6 +64,8 @@ public class TranslateActivity extends AppCompatActivity {
     private String basic_trans ="";
     private DB DBOP = new DB(this);
     private Language language = new Language();
+    private MySpeechSynthesizer mySpeechSynthesizer;
+    private int speak_flag = 0;
     String appKey ="7e69071cb0e80746";
     String query = "";
     String salt = String.valueOf(System.currentTimeMillis());
@@ -88,7 +87,7 @@ public class TranslateActivity extends AppCompatActivity {
                     web_tag.setVisibility(View.INVISIBLE);
                     pb.setVisibility(View.INVISIBLE);
                     warn.setVisibility(View.INVISIBLE);
-                    res_v.setVisibility(View.INVISIBLE);
+                    result_voice.setVisibility(View.INVISIBLE);
                     tra_lan.setVisibility(View.INVISIBLE);
                     star.setVisibility(View.INVISIBLE);
                     break;
@@ -104,7 +103,7 @@ public class TranslateActivity extends AppCompatActivity {
                     translate_result.setVisibility(View.VISIBLE);
                     translate_result.setText(translation);
                     star.setVisibility(View.VISIBLE);
-                    res_v.setVisibility(View.VISIBLE);
+                    result_voice.setVisibility(View.VISIBLE);
                     tra_lan.setVisibility(View.VISIBLE);
                     if(is_basic){
                         basic_result.setVisibility(View.VISIBLE);
@@ -183,13 +182,73 @@ public class TranslateActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private SynthesizerListener mSynListener = new SynthesizerListener(){
+
+
+        @Override
+        public void onSpeakBegin() {
+            Log.i("TTS", "开始播放");
+        }
+
+        @Override
+        public void onBufferProgress(int percent, int beginPos, int endPos, String info) {
+            Log.i("TTS", "缓冲 : " + percent);
+        }
+
+        @Override
+        public void onSpeakPaused() {
+
+        }
+
+        @Override
+        public void onSpeakResumed() {
+
+        }
+
+        @Override
+        public void onSpeakProgress(int percent, int beginPos, int endPos) {
+
+        }
+
+        @Override
+        public void onCompleted(SpeechError speechError) {
+            switch (speak_flag){
+                case 1:
+                    ori_voice.setImageResource(R.drawable.ic_volume_up_black_24dp);
+                    break;
+                case 2:
+                    result_voice.setImageResource(R.drawable.ic_volume_up_black_24dp);
+                    break;
+            }
+        }
+
+        @Override
+        public void onEvent(int i, int i1, int i2, Bundle bundle) {
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_translate);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        //Init View START
+        iniView();
+        getInfo();
+        initLan();
+        Query();
+
+
+        //讯飞语音合成
+        SpeechUtility.createUtility(TranslateActivity.this, SpeechConstant.APPID +"=5a61b0d2");
+        mySpeechSynthesizer = new MySpeechSynthesizer(this,mSynListener);
+       // mySpeechSynthesizer.speaking("Coffee also contains trigonelline, an antibacterial compound that not only gives it a wonderful aroma but may be a factor in preventing dental caries");
+
+    }
+    void iniView(){
+
         input = findViewById(R.id.editText);
         translate_result = findViewById(R.id.translate);
         basic_result = findViewById(R.id.basic);
@@ -201,12 +260,14 @@ public class TranslateActivity extends AppCompatActivity {
         web_tag = findViewById(R.id.web_tag);
         warn = findViewById(R.id.warn);
         swtch = findViewById(R.id.swtch);
-        res_v = findViewById(R.id.result_voice);
         tra_lan = findViewById(R.id.tra_lan);
         src_lan = findViewById(R.id.src_lan);
         toolbar = findViewById(R.id.tool_bar);
         clr = findViewById(R.id.et_clear);
+        ori_voice = findViewById(R.id.ori_voice);
+        result_voice = findViewById(R.id.result_voice);
         //Init View END
+
         //收键盘
         ScrollView cardView = findViewById(R.id.srcv);
         cardView.setFocusable(true);
@@ -227,6 +288,7 @@ public class TranslateActivity extends AppCompatActivity {
                 toolbar.setVisibility(View.GONE);
             }
         });
+
         input.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -282,11 +344,76 @@ public class TranslateActivity extends AppCompatActivity {
                 return true;
             }
         });
-        getInfo();
-        initLan();
-        Query();
 
+        //获取发音
+        ori_voice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = input.getText().toString();
+                if(!(src_lan.getText().equals("中文")||src_lan.getText().equals("英文"))){
+                    Toast.makeText(TranslateActivity.this,"暂时不支持非中英文的发音",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    switch (speak_flag){
+                        case 0:
+                            if(TextUtils.isEmpty(text)){
+                                Toast.makeText(TranslateActivity.this,"请输入翻译内容",Toast.LENGTH_SHORT).show();
+                            }else{
+                                mySpeechSynthesizer.speaking(text);
+                                ori_voice.setImageResource(R.drawable.ic_stop_black_24dp);
+                            }
+                            speak_flag =1;
+                            break;
+                        case 1:
+                            mySpeechSynthesizer.stopSpeaking();
+                            ori_voice.setImageResource(R.drawable.ic_volume_up_black_24dp);
+                            speak_flag =0;
+                            break;
+                        case 2:
+                            if(TextUtils.isEmpty(text)){
+                                Toast.makeText(TranslateActivity.this,"请输入翻译内容",Toast.LENGTH_SHORT).show();
+                            }else{
+                                mySpeechSynthesizer.speaking(text);
+                                ori_voice.setImageResource(R.drawable.ic_stop_black_24dp);
+                            }
+                            result_voice.setImageResource(R.drawable.ic_volume_up_black_24dp);
+                            speak_flag =1;
+                            break;
+                    }
+                }
+
+            }
+        });
+        result_voice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!(tra_lan.getText().equals("中文")||tra_lan.getText().equals("英文"))){
+                    Toast.makeText(TranslateActivity.this,"暂时不支持非中英文的发音",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    switch (speak_flag){
+                        case 0:
+                            mySpeechSynthesizer.speaking(translate_result.getText().toString());
+                            result_voice.setImageResource(R.drawable.ic_stop_black_24dp);
+                            speak_flag =2;
+                            break;
+                        case 1:
+                            mySpeechSynthesizer.speaking(translate_result.getText().toString());
+                            result_voice.setImageResource(R.drawable.ic_stop_black_24dp);
+                            ori_voice.setImageResource(R.drawable.ic_volume_up_black_24dp);
+                            speak_flag =2;
+                            break;
+                        case 2:
+                            mySpeechSynthesizer.stopSpeaking();
+                            result_voice.setImageResource(R.drawable.ic_volume_up_black_24dp);
+                            speak_flag =0;
+                            break;
+                    }
+                }
+            }
+        });
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         switch (requestCode) {
