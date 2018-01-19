@@ -437,6 +437,13 @@ public class TranslateActivity extends AppCompatActivity {
             default:
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mySpeechSynthesizer.stopSpeaking();
+    }
+
     public void Query(){
         query = input.getText().toString();
         Log.d("lhl",query);
